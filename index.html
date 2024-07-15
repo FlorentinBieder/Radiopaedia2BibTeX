@@ -5,22 +5,24 @@
 function main(){
    
     function translate(input){
-        const re = new RegExp("(.+) et al\. (.*\.) Reference article, Radiopaedia\.org \\(Accessed on (.*)\\) (https.*)")
-        const matches = input.match(re)
-        var authors = matches[1]
-        authors = authors.split(', ').map(function(a){
-            var names = a.split(' ')
-            var out = names[0]+", "+names.slice(1).join(' '); //.join('. ')+"."
-            return out;
-        }).join(' and ')
-        var title = matches[2]
-        var date = new Date(Date.parse(matches[3]))
+        var matches = ['AAA', 'BBB', 'CCC', '15 Jul 2024', 'EEE', 'FFF']
+        var [author_title, date_url] = input.split('. Reference article, Radiopaedia.org ')
+        author_title = author_title.split(', ')
+        var authors = author_title.slice(0, -1)
+        var etal_title = author_title.slice(-1)[0].split('et al. ')
+        var etal = etal_title.length > 1
+        var title = etal_title.slice(-1)[0]
+        authors = authors.join(' and ')
+        
+        date_url = date_url.split(') ')
+        var date = date_url[0].split('(Accessed on ')[1]
+        date = new Date(Date.parse(date))
         date.setUTCHours(0, 0, 0, 0);
         var time = date.toISOString().slice(0, 10)
-        var url = matches[4].split(' ')[0]
+        var url = date_url[1]
         var output = ("@misc\{radiopaedia"+title.split(' ')[0]+",\n"+
             "  title = \{"+title+" Reference article, Radiopaedia.org\},\n"+
-            "  author= \{"+authors+" and others\},\n"+
+            "  author= \{"+authors+(etal?" and others":"")+"\},\n"+
             "  howpublished = \{\\url\{"+url+"\}\},\n"+
                     "  note = \{Accessed: "+time+"\}\n\}"); //to iso
         return output
@@ -43,6 +45,7 @@ function main(){
     document.body.appendChild(textareaOutput)
     //outElemphoto.onmouseover = x => elem.select()
     var value = 'Gaillard F, Bell D, Hacking C, et al. Glial cells. Reference article, Radiopaedia.org (Accessed on 15 Jul 2024) https://doi.org/10.53347/rID-51711 '
+    //var value = 'Gaillard F, Hacking C, Knipe H, Astrocytes. Reference article, Radiopaedia.org (Accessed on 15 Jul 2024) https://doi.org/10.53347/rID-51707 '
     textareaInput.value = value
     textareaOutput.value = translate(value)
 }
