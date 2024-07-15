@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+
+function main(){
+   
+    function translate(input){
+        //const re = /(([A-Za-z ]*),)+ et al. (.*\.) Reference article, Radiopaedia\.org \(Accessed on (.*)\) (https.*)/gm
+        const re = new RegExp("(.+) et al\. (.*\.) Reference article, Radiopaedia\.org \\(Accessed on (.*)\\) (https.*)")
+        const matches = input.match(re)
+        var authors = matches[1]
+        console.log(authors)
+        authors = authors.split(', ').map(function(a){
+            var names = a.split(' ')
+            var out = names[0]+", "+names.slice(1).join('. ')+"."
+            return out
+        }).join(' and ')
+        var title = matches[2]
+        console.log(title)
+        var time = (new Date(Date.parse(matches[3]))).toISOString().slice(0, 10)
+
+        console.log(time)
+        var url = matches[4].split(' ')[0]
+        console.log(url)
+        //matches.map(x => console.log(x, '\n'))
+        //return matches.toString()
+
+        var output = ("@misc\{radiopaedia"+title.split(' ')[0]+"\n"+
+            "  title = \{"+title+" Reference article, Radiopaedia.org\},\n"+
+            "  author= \{"+authors+" et al. \},\n"+
+            "  howpublished = \{\\url\{"+url+"\}\},\n"+
+                    "  note = \{Accessed: "+time+"\}\n\}"); //to iso
+        return output
+    }
+    const textareaInput = document.createElement('textarea')
+    textareaInput.style.width = '600px'
+    textareaInput.style.height = '400px'
+    textareaInput.value = ''
+
+    const textareaOutput = document.createElement('textarea')
+    textareaOutput.style.width = '600px'
+    textareaOutput.style.height = '400px'
+    textareaOutput.value = 'asf'
+
+    function eventDisp(event) {
+        console.log('Textarea value changed:');
+        textareaOutput.value = translate(event.target.value)
+    }
+    textareaInput.addEventListener('input', eventDisp);
+    //textareaInput.addEventListener('onMouseOver', eventDisp);
+    document.body.appendChild(textareaInput)
+    document.body.appendChild(textareaOutput)
+    //outElemphoto.onmouseover = x => outElemphoto.select()
+    //outElem007.onmouseover = x => outElem007.select()
+    var value = 'Gaillard F, Bell D, Hacking C, et al. Glial cells. Reference article, Radiopaedia.org (Accessed on 15 Jul 2024) https://doi.org/10.53347/rID-51711 '
+    textareaInput.value = value
+    textareaOutput.value = translate(value)
+}
+window.onload = main
+
+</script>
+</head>
+<body>
+</body>
+</html>
