@@ -5,7 +5,6 @@
 function main(){
    
     function translate(input){
-        var matches = ['AAA', 'BBB', 'CCC', '15 Jul 2024', 'EEE', 'FFF']
         var [author_title, date_url] = input.split('. Reference article, Radiopaedia.org ')
         author_title = author_title.split(', ')
         var authors = author_title.slice(0, -1)
@@ -20,8 +19,8 @@ function main(){
         date.setUTCHours(0, 0, 0, 0);
         var time = date.toISOString().slice(0, 10)
         var url = date_url[1]
-        var output = ("@misc\{radiopaedia"+title.split(' ')[0]+",\n"+
-            "  title = \{"+title+" Reference article, Radiopaedia.org\},\n"+
+        var output = ("@misc\{radiopaedia"+title.split(' ').slice(0,2).join('')+",\n"+
+            "  title = \{"+title+". Reference article, Radiopaedia.org\},\n"+
             "  author= \{"+authors+(etal?" and others":"")+"\},\n"+
             "  howpublished = \{\\url\{"+url+"\}\},\n"+
                     "  note = \{Accessed: "+time+"\}\n\}"); //to iso
